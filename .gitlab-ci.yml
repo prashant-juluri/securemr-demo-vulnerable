@@ -1,0 +1,25 @@
+stages:
+  - security
+
+securemr_scan:
+
+  stage: security
+
+  image: docker:24
+
+  services:
+    - docker:dind
+
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+
+  script:
+    - echo "Running SecureMR scan"
+
+    - docker run \
+        -e OPENAI_API_KEY=$OPENAI_API_KEY \
+        -e GITHUB_TOKEN=$GITHUB_TOKEN \
+        -e GITHUB_REPOSITORY=$CI_PROJECT_PATH \
+        -v $CI_PROJECT_DIR:/target \
+        prashantjuluri/securemr:latest \
+        python securemr.py /target

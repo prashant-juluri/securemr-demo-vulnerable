@@ -17,7 +17,7 @@ jobs:
 
     steps:
 
-      - name: Checkout repository being scanned
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Clone SecureMR scanner
@@ -36,5 +36,5 @@ jobs:
             -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             -e GITHUB_REPOSITORY=${{ github.repository }} \
             -e GITHUB_EVENT_PATH=${{ github.event_path }} \
-            -v ${{ github.workspace }}:/app \
-            securemr
+            -v ${{ github.workspace }}:/target \
+            securemr python securemr.py /target

@@ -1,0 +1,40 @@
+name: SecureMR Security Scan
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  securemr:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+
+      - name: Checkout repository being scanned
+        uses: actions/checkout@v4
+
+      - name: Clone SecureMR scanner
+        run: |
+          git clone https://github.com/prashant-juluri/securemr.git
+
+      - name: Build SecureMR container
+        run: |
+          cd securemr
+          docker build -t securemr .
+
+      - name: Run SecureMR scan
+        run: |
+          docker run \
+            -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+            -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+            -e GITHUB_REPOSITORY=${{ github.repository }} \
+            -e GITHUB_EVENT_PATH=${{ github.event_path }} \
+            -v ${{ github.workspace }}:/app \
+            securemr
